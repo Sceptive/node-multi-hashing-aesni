@@ -8,10 +8,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/snipa22/node-multi-hashing-aesni.git"
+        "url": "https://github.com/Sceptive/node-multi-hashing-aesni.git"
     },
-    "dependencies" : {
-        "bindings" : "*",
+    "dependencies": {
+        "bindings": "*",
         "nan": "^2.0.0"
     },
     "keywords": [

@@ -33,11 +33,10 @@ static const char _NR[] = {
 
 #include <stddef.h>
 #include <time.h> 
+
 #ifndef __OpenBSD__
 #include <sys/timeb.h>
 #include <malloc.h>
-#else
-#include <sys/malloc.h>
 #endif
 #include <string.h>
 #include <stdlib.h>
@@ -464,10 +463,15 @@ OAES_RET oaes_sprintf(
 #ifdef OAES_HAVE_ISAAC
 static void oaes_get_seed( char buf[RANDSIZ + 1] )
 {
+#ifndef __OpenBSD__
 	struct timeb timer;
+#else
+	time_t timer = time(0);
+#endif
 	struct tm *gmTimer;
 	char * _test = NULL;
 	
+#ifndef __OpenBSD__
 	ftime (&timer);
 	gmTimer = gmtime( &timer.time );
 	_test = (char *) calloc( sizeof( char ), timer.millitm );
@@ -475,6 +479,14 @@ static void oaes_get_seed( char buf[RANDSIZ + 1] )
 		gmTimer->tm_year + 1900, gmTimer->tm_mon + 1, gmTimer->tm_mday,
 		gmTimer->tm_hour, gmTimer->tm_min, gmTimer->tm_sec, timer.millitm,
 		_test + timer.millitm, getpid() );
+#else
+	gmTimer = gmtime( &timer );
+	_test = (char *) calloc( sizeof( char ), 1);
+	sprintf( buf, "%04d%02d%02d%02d%02d%02d%03d%p%d",
+		gmTimer->tm_year + 1900, gmTimer->tm_mon + 1, gmTimer->tm_mday,
+		gmTimer->tm_hour, gmTimer->tm_min, gmTimer->tm_sec, 1,
+		_test + 1, getpid() );
+#endif
 	
 	if( _test )
 		free( _test );
@@ -482,18 +494,29 @@ static void oaes_get_seed( char buf[RANDSIZ + 1] )
 #else
 static uint32_t oaes_get_seed(void)
 {
+#ifndef __OpenBSD__
 	struct timeb timer;
+#else
+	time_t timer = time(0);
+#endif
 	struct tm *gmTimer;
 	char * _test = NULL;
 	uint32_t _ret = 0;
-	
+
+#ifndef __OpenBSD__
 	ftime (&timer);
 	gmTimer = gmtime( &timer.time );
 	_test = (char *) calloc( sizeof( char ), timer.millitm );
 	_ret = gmTimer->tm_year + 1900 + gmTimer->tm_mon + 1 + gmTimer->tm_mday +
 			gmTimer->tm_hour + gmTimer->tm_min + gmTimer->tm_sec + timer.millitm +
 			(uintptr_t) ( _test + timer.millitm ) + getpid();
-
+#else
+	gmTimer = gmtime( &timer );
+	_test = (char *) calloc ( sizeof( char ), 1);
+	_ret = gmTimer->tm_year + 1900 + gmTimer->tm_mon +1 + gmTimer->tm_mday +
+			gmTimer->tm_hour + gmTimer->tm_min + gmTimer->tm_sec + 1 +
+			(uintptr_t) ( _test + 1 ) + getpid();
+#endif
 	if( _test )
 		free( _test );
 	
