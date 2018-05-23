@@ -1,9 +1,7 @@
 node-multi-hashing
 ===============
 
-[![Build Status](https://travis-ci.org/zone117x/node-multi-hashing.png?branch=master)](https://travis-ci.org/zone117x/node-multi-hashing)
-
-[![NPM](https://nodei.co/npm/multi-hashing.png?downloads=true&stars=true)](https://nodei.co/npm/multi-hashing/)
+Seek https://github.com/zone117x/node-multi-hashing for original tree
 
 Cryptocurrency hashing functions for node.js.
 
